@@ -1,25 +1,43 @@
 "use client";
+
 import Editor from "@monaco-editor/react";
-import { socket } from "@/lib/Socket";
+import { useEffect, useRef } from "react";
+import { socket } from "@/lib/socket";
 
-export default function CodeEditor({ value, setCode, roomCode }) {
-  const handleChange = (val) => {
-    setCode(val);
+export default function CodeEditor() {
+  const editorRef = useRef(null);
+  const isRemote = useRef(false);
 
-    socket.emit("code-change", {
-      roomCode,
-      code: val,
+  function onMount(editor) {
+    editorRef.current = editor;
+  }
+
+  function onChange(value) {
+    if (isRemote.current) {
+      isRemote.current = false;
+      return;
+    }
+
+    socket.emit("code-change", value);
+  }
+
+  useEffect(() => {
+    socket.on("code-change", (code) => {
+      if (!editorRef.current) return;
+      isRemote.current = true;
+      editorRef.current.setValue(code);
     });
-  };
+
+    return () => socket.off("code-change");
+  }, []);
 
   return (
-    <div style={{ height: "90vh" }}>
-      <Editor
-        height="100%"
-        defaultLanguage="javascript"
-        value={value}
-        onChange={handleChange}
-      />
-    </div>
+    <Editor
+      height="100%"
+      theme="vs-dark"
+      defaultLanguage="javascript"
+      onMount={onMount}
+      onChange={onChange}
+    />
   );
 }

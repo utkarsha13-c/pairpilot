@@ -1,22 +1,26 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { socket } from "@/lib/Socket";
 import CodeEditor from "@/components/ui/CodeEditor";
+import ChatBox from "@/components/ChatBox";
 
 export default function RoomClient({ roomCode }) {
-  const [code, setCode] = useState("");
-
   useEffect(() => {
+    socket.connect();
     socket.emit("join-room", roomCode);
 
-    socket.on("code-update", (newCode) => {
-      setCode(newCode);
-    });
-
     return () => {
-      socket.off("code-update");
+      socket.disconnect();
     };
   }, [roomCode]);
 
-  return <CodeEditor value={code} roomCode={roomCode} setCode={setCode} />;
+  return (
+    <div className="flex h-screen">
+      <div className="flex-1">
+        <CodeEditor />
+      </div>
+      <ChatBox />
+    </div>
+  );
 }
