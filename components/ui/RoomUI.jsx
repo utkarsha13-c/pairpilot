@@ -1,22 +1,24 @@
 "use client";
 
-import CodeEditor from "./CodeEditor";
-import ChatBox from "../ChatBox";
+import { useEffect } from "react";
+import CodeEditor from "@/components/ui/CodeEditor";
+import ChatBox from "@/components/ChatBox";
+import { socket } from "@/lib/Socket";
 
-export default function RoomUI({ roomCode, user }) {
+export default function RoomUI({ roomCode }) {
+  useEffect(() => {
+    socket.emit("join-room", roomCode);
+    console.log("📦 joined room", roomCode);
+  }, [roomCode]);
+
   return (
-    <div className="h-screen flex flex-col">
-      <div className="bg-black text-white p-3">
-        PairPilot 🚀 | Room: {roomCode}
+    <div style={{ height: "100vh", width: "100vw", display: "flex" }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <CodeEditor roomId={roomCode} />
       </div>
 
-      <div className="flex flex-1">
-        <div className="w-2/3">
-          <CodeEditor roomCode={roomCode} />
-        </div>
-        <div className="w-1/3 border-l">
-          <ChatBox roomCode={roomCode} user={user} />
-        </div>
+      <div style={{ width: 320, borderLeft: "1px solid #333" }}>
+        <ChatBox roomId={roomCode} />
       </div>
     </div>
   );

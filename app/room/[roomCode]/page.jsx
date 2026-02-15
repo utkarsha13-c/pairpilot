@@ -1,7 +1,7 @@
-import RoomClient from "./room-client";
+import RoomUI from "@/components/ui/RoomUI";
 
 export default async function RoomPage({ params }) {
   const { roomCode } = await params; // ✅ THIS LINE IS MANDATORY
 
-  return <RoomClient roomCode={roomCode} />;
+  return <RoomUI roomCode={roomCode} />;
 }

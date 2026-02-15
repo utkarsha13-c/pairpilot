@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { socket } from "@/lib/socket";
+import { socket } from "@/lib/Socket";
 
-export default function ChatBox() {
+export default function ChatBox({ roomId }) {
   const [msg, setMsg] = useState("");
   const [messages, setMessages] = useState([]);
 
@@ -16,21 +16,27 @@ export default function ChatBox() {
   }, []);
 
   const send = () => {
-    socket.emit("chat-message", msg);
+    if (!msg.trim()) return;
+    socket.emit("chat-message", { roomId, text: msg });
     setMsg("");
   };
 
   return (
-    <div className="w-1/3 p-3 bg-gray-900 text-white">
-      {messages.map((m, i) => (
-        <div key={i}>{m}</div>
-      ))}
-      <input
-        value={msg}
-        onChange={(e) => setMsg(e.target.value)}
-        className="text-black"
-      />
-      <button onClick={send}>Send</button>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
+        {messages.map((m, i) => (
+          <div key={i}>{m.text}</div>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", padding: 8 }}>
+        <input
+          value={msg}
+          onChange={(e) => setMsg(e.target.value)}
+          style={{ flex: 1 }}
+        />
+        <button onClick={send}>Send</button>
+      </div>
     </div>
   );
 }
