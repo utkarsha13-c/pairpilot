@@ -28,5 +28,5 @@ io.on("connection", (socket) => {
 
 /* 🔥 THIS LINE IS MANDATORY 🔥 */
 httpServer.listen(3001, () => {
-  console.log("🚀 Socket server running on 3001");
+  console.log("🚀 Socket server running on 3002");
 });
